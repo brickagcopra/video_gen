@@ -4,7 +4,7 @@ import "./globals.css";
 import TopNav from "@/components/nav/top-nav";
 import { ClerkProvider } from "@clerk/nextjs";
 import { VideoProvider } from "@/context/video";
-// import PayPalProvider from "@/context/paypal";
+import PayPalProvider from "@/context/paypal";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -27,10 +27,10 @@ export default function RootLayout({
       <html lang="en" className="dark">
         <body className={`${audiowide.variable} antialiased`}>
           <VideoProvider>
-            {/* <PayPalProvider> */}
+            <PayPalProvider>
               <TopNav />
               {children}
-            {/* </PayPalProvider> */}
+            </PayPalProvider>
           </VideoProvider>
         </body>
       </html>

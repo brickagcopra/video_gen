@@ -8,7 +8,13 @@ export const saveCreditToDb = async (amount: number, credits: number) => {
     await db();
 
     const user = await currentUser();
-    const userEmail = user?.emailAddresses[0].emailAddress;
+    const userEmail = user?.emailAddresses?.[0]?.emailAddress;
+
+    if (!userEmail) {
+      // No authenticated user — don't attempt to create a Credit document with a missing userEmail.
+      console.warn("saveCreditToDb: no authenticated user");
+      return null;
+    }
 
     // check if the user already has a credit record
     const existingCredit = await Credit.findOne({ userEmail });
@@ -39,7 +45,12 @@ export const getUserCreditsDb = async () => {
     await db();
 
     const user = await currentUser();
-    const userEmail = user?.emailAddresses[0].emailAddress;
+    const userEmail = user?.emailAddresses?.[0]?.emailAddress;
+
+    if (!userEmail) {
+      console.warn("getUserCreditsDb: no authenticated user");
+      return null;
+    }
 
     const credit = await Credit.findOne({ userEmail });
     return JSON.parse(JSON.stringify(credit));
@@ -53,7 +64,13 @@ export const checkCreditRecordDb = async () => {
     await db();
 
     const user = await currentUser();
-    const userEmail = user?.emailAddresses[0].emailAddress;
+    const userEmail = user?.emailAddresses?.[0]?.emailAddress;
+
+    if (!userEmail) {
+      // Caller can handle null (unauthenticated). Avoid creating a Credit with undefined userEmail.
+      console.warn("checkCreditRecordDb: no authenticated user");
+      return null;
+    }
 
     const credit = await Credit.findOne({ userEmail });
 
@@ -67,7 +84,14 @@ export const checkCreditRecordDb = async () => {
       await newCredit.save();
       return JSON.parse(JSON.stringify(newCredit));
     }
-  } catch (err: any) {
-    throw new Error();
+
+    // If a credit record already exists, return it so callers always get a value.
+    return JSON.parse(JSON.stringify(credit));
+  } catch (err: unknown) {
+    // Preserve the original error message and stack so Next.js can show
+    // a helpful message instead of "no message was provided".
+    console.error("checkCreditRecordDb error:", err);
+    if (err instanceof Error) throw err;
+    throw new Error(String(err ?? "checkCreditRecordDb failed"));
   }
 };

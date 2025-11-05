@@ -18,7 +18,7 @@ export default function Pricing() {
         </h2>
         <div className="grid md:grid-cols-3 gap-8">
           {pricePlans.map((plan, index) => (
-            <PriceCard index={index} plan={plan} />
+            <PriceCard key={index} index={index} plan={plan} />
           ))}
         </div>
       </div>
@@ -28,7 +28,6 @@ export default function Pricing() {
 
 const PriceCard = ({ index, plan }: any) => (
   <div
-    key={index}
     className={`bg-gray-800 p-6 rounded-lg border ${
       plan.popular ? "border-purple-500" : "border-gray-700"
     } hover:border-purple-500 transition-colors`}

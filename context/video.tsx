@@ -118,20 +118,29 @@ export const VideoProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    checkCreditRecordDb().then((credit) => {
-      if (credit?.credits > 0) {
-        setCredits(credit.credits);
-      }
-    });
+    checkCreditRecordDb()
+      .then((credit) => {
+        if (credit?.credits > 0) {
+          setCredits(credit.credits);
+        }
+      })
+      .catch((err) => {
+        // If the user is not authenticated or the server action fails, don't crash the UI.
+        console.warn("checkCreditRecordDb failed:", err);
+      });
   }, []);
 
   const getUserCredits = async () => {
-    getUserCreditsDb().then((credit) => {
-      console.log("credit in useEffect = ", credit);
-      if (credit?.credits > 0) {
-        setCredits(credit.credits);
-      }
-    });
+    getUserCreditsDb()
+      .then((credit) => {
+        console.log("credit in useEffect = ", credit);
+        if (credit?.credits > 0) {
+          setCredits(credit.credits);
+        }
+      })
+      .catch((err) => {
+        console.warn("getUserCreditsDb failed:", err);
+      });
   };
 
   const handleStorySelect = (story: string) => {

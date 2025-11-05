@@ -87,7 +87,7 @@ export default function BuyCredits() {
                   purchase_units: [
                     {
                       amount: {
-                        currency_code: "AUD",
+                        currency_code: "USD",
                         value: price,
                       },
                       custom_id: credits,
